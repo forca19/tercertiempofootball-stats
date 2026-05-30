@@ -97,10 +97,10 @@ export default async function TeamStatsContent({ teamSlug, seasonIdFromQuery }: 
                       <span className="player-name">{p.player_name}</span>
                     </Link>
                   </td>
-                  <td>{p.matches}</td>
                   <td className="stat-goals">{p.goals}</td>
                   <td className="stat-assists">{p.assists}</td>
                   <td className="stat-total">{p.goals + p.assists}</td>
+                  <td>{p.matches}</td>
                 </tr>
               ))}
             </tbody>
