@@ -78,14 +78,13 @@ export default async function TeamStatsContent({ teamSlug, seasonIdFromQuery }: 
           <table className="player-table">
             <thead>
               <tr>
-                <th>#</th><th>Jugador</th><th>Posición</th>
-                <th>Partidos</th><th>Goles</th><th>Asistencias</th><th>G+A</th>
+                <th>Jugador</th>
+                <th>Goles</th><th>Asistencias</th><th>G+A</th><th>Partidos</th>
               </tr>
             </thead>
             <tbody>
               {players.map(p => (
                 <tr key={p.roster_id}>
-                  <td className="muted">{p.number ?? '—'}</td>
                   <td>
                     <Link href={getPlayerHref(p.player_id, team.slug, activeSeason.id)} className="player-link">
                       {p.player_photo_url && (
@@ -98,7 +97,6 @@ export default async function TeamStatsContent({ teamSlug, seasonIdFromQuery }: 
                       <span className="player-name">{p.player_name}</span>
                     </Link>
                   </td>
-                  <td className="muted">{p.position ?? '—'}</td>
                   <td>{p.matches}</td>
                   <td className="stat-goals">{p.goals}</td>
                   <td className="stat-assists">{p.assists}</td>
