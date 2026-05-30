@@ -150,7 +150,7 @@ export async function getTeamStats(
     .select('*')
     .eq('team_id', team.id)
     .eq('season_id', season.id)
-    .order('player_name')
+    .order('goal_contributions', { ascending: false })
   if (error) throw error
 
   const players = rows ?? []
