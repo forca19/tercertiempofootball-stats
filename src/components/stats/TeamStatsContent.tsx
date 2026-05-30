@@ -25,8 +25,8 @@ export default async function TeamStatsContent({ teamSlug, seasonIdFromQuery }: 
         <Link href="/" className="back-link">← Inicio</Link>
       </nav>
 
-      <header className="page-header team-hero">
-        <div className="team-header-left">
+      <header className="team-hero">
+        <div className="team-hero-top">
           {team.logo_url && (
             <img
               src={team.logo_url}
@@ -34,27 +34,31 @@ export default async function TeamStatsContent({ teamSlug, seasonIdFromQuery }: 
               className="team-logo-lg"
             />
           )}
-          <div>
-            <span className="team-type-badge">
-            Equipo
-          </span>
-            <h1>{team.name}</h1>
-            <p className="subtitle">
-              Temporada {activeSeason.name}
-            </p>
+          
+          <div className="team-hero-content">
 
-            <p className="subtitle-secondary">
-              Estadísticas de jugadores
-            </p>
+              <span className="team-type-badge">
+                Equipo
+              </span>
+
+              <h1>{team.name}</h1>
+              
+              <p className="subtitle">
+                Temporada {activeSeason.name}
+              </p>
+
+              <p className="subtitle-secondary">
+                Estadísticas de jugadores
+              </p>
+          <div className="team-hero-meta" aria-label="Resumen histórico del equipo">
+            <span><strong>{seasons.length}</strong> temporadas históricas</span>
+            <span><strong>{players.length}</strong> jugadores en temporada</span>
           </div>
+          <Suspense>
+            <SeasonSelector seasons={seasons} currentSeasonId={activeSeason.id} />
+          </Suspense>
+        </div>  
         </div>
-        <div className="team-hero-meta" aria-label="Resumen histórico del equipo">
-          <span><strong>{seasons.length}</strong> temporadas históricas</span>
-          <span><strong>{players.length}</strong> jugadores en temporada</span>
-        </div>
-        <Suspense>
-          <SeasonSelector seasons={seasons} currentSeasonId={activeSeason.id} />
-        </Suspense>
       </header>
 
       <section className="summary-cards">
