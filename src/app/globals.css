@@ -25,11 +25,18 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); font
 .page-header { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; }
 .page-header h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.18; }
 .subtitle { color: var(--muted); font-size: 0.9rem; margin-top: 2px; }
+.subtitle-secondary {  color: var(--muted);  margin-top: .25rem; }
 
 /* ── Season selector ── */
-.season-selector { display: flex; align-items: center; gap: 0.65rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.55rem 0.65rem; }
+.season-selector { display: flex; align-items: center; gap: 0.65rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.55rem 0.65rem; width: 100%; }
+@media (max-width: 640px) {
+  .season-selector {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
 .season-selector label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
-.season-selector select { font-family: var(--font); font-size: 0.9rem; font-weight: 700; padding: 7px 28px 7px 10px; border: 1px solid var(--border); border-radius: 7px; background: var(--surface-2); color: var(--text); cursor: pointer; outline: none; }
+.season-selector select { flex: 1; font-family: var(--font); font-size: 0.9rem; font-weight: 700; padding: 7px 28px 7px 10px; border: 1px solid var(--border); border-radius: 7px; background: var(--surface-2); color: var(--text); cursor: pointer; outline: none; }
 .season-selector select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(77, 163, 255, 0.16); }
 
 /* ── Summary cards ── */
@@ -46,6 +53,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); font
   gap: 8px;
   overflow: hidden;
   box-shadow: 0 12px 34px rgba(2, 8, 23, 0.22);
+  min-height: 110px;
 }
 .summary-card::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--card-accent); }
 .summary-card-goals { --card-accent: var(--accent); }
@@ -53,7 +61,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); font
 .summary-card-total { --card-accent: var(--accent-total); }
 .summary-card-saves { --card-accent: var(--accent-saves); }
 .card-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-.card-value { color: #ffffff; font-size: 2.65rem; font-weight: 900; letter-spacing: -0.02em; line-height: 0.98; }
+.card-value { color: #ffffff; font-size: 3.25rem; font-weight: 900; letter-spacing: -0.02em; line-height: 0.98;  }
 @media (max-width: 600px) { .card-value { font-size: 2.2rem; } }
 
 /* ── Leaderboards ── */
@@ -158,6 +166,8 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); font
 
 /* ── Team hero ── */
 .team-hero {
+  display: grid;
+  gap: 1.25rem;
   align-items: stretch;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -170,14 +180,34 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); font
 .team-hero h1 { font-size: 2.45rem; }
 .team-hero-meta { display: flex; flex-wrap: wrap; gap: 0.65rem; align-self: flex-start; }
 .team-hero-meta span {
+  min-width: 140px;
+  padding: .75rem 1rem; 
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 999px;
   color: var(--muted);
   font-size: 0.84rem;
-  padding: 0.38rem 0.7rem;
 }
 .team-hero-meta strong { color: var(--text); }
+
+.team-type-badge {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 0.35rem 0.8rem;
+
+  border-radius: 999px;
+
+  background: rgba(77,163,255,.12);
+
+  border: 1px solid rgba(77,163,255,.25);
+
+  color: var(--accent);
+
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
 
 /* ── Player photo ── */
 .player-header { display: flex; align-items: center; gap: 1.25rem; }

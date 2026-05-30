@@ -35,8 +35,17 @@ export default async function TeamStatsContent({ teamSlug, seasonIdFromQuery }: 
             />
           )}
           <div>
+            <span className="team-type-badge">
+            Equipo
+          </span>
             <h1>{team.name}</h1>
-            <p className="subtitle">Temporada {activeSeason.name} · Estadísticas de jugadores</p>
+            <p className="subtitle">
+              Temporada {activeSeason.name}
+            </p>
+
+            <p className="subtitle-secondary">
+              Estadísticas de jugadores
+            </p>
           </div>
         </div>
         <div className="team-hero-meta" aria-label="Resumen histórico del equipo">

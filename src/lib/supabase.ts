@@ -78,7 +78,7 @@ export async function getSeasonsForTeam(teamId: string): Promise<Season[]> {
     .from('seasons')
     .select('id, team_id, name, is_current')
     .eq('team_id', teamId)
-    .order('name', { ascending: false })
+    .order('sort_order', { ascending: false })
   if (error) throw error
   return data ?? []
 }
