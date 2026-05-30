@@ -28,6 +28,7 @@ export default async function PlayerProfilePage({ params, searchParams }: Props)
   )
   const primaryTeamRow = contextTeamRow ?? career.find(row => row.is_current) ?? career[0]
   const seasonsCount = new Set(career.map(r => r.season_id)).size
+  const chartRows = [...career].reverse()
 
   return (
     <main className="page">
@@ -45,14 +46,13 @@ export default async function PlayerProfilePage({ params, searchParams }: Props)
         <Link href="/" className="back-link">Inicio</Link>
       </nav>
 
-      <header className="player-header">
+      <header className="player-header player-hero">
         <div className="player-photo-wrap">
           {player.photo_url ? (
             <img
               src={player.photo_url}
               alt={player.name}
               className="player-photo"
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
             />
           ) : (
             <div className="player-photo-placeholder">
@@ -73,11 +73,16 @@ export default async function PlayerProfilePage({ params, searchParams }: Props)
       <section className="player-table-section">
         <h2>Estadísticas de carrera</h2>
         <div className="summary-cards">
-          <SummaryCard label="Goles" value={totalGoals} />
-          <SummaryCard label="Asistencias" value={totalAssists} />
+          <SummaryCard label="Goles" value={totalGoals} tone="goals" />
+          <SummaryCard label="Asistencias" value={totalAssists} tone="assists" />
           <SummaryCard label="Partidos" value={totalMatches} />
           <SummaryCard label="Temporadas" value={seasonsCount} />
         </div>
+      </section>
+
+      <section className="player-table-section">
+        <h2>Progresión de goles</h2>
+        <CareerProgressionChart rows={chartRows} />
       </section>
 
       <section className="player-table-section">
@@ -113,7 +118,6 @@ export default async function PlayerProfilePage({ params, searchParams }: Props)
                           src={row.team_logo_url}
                           alt={row.team_name}
                           className="team-logo-sm"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                         />
                       )}
                       {row.team_name}
@@ -133,11 +137,32 @@ export default async function PlayerProfilePage({ params, searchParams }: Props)
   )
 }
 
-function SummaryCard({ label, value }: { label: string; value: number }) {
+function SummaryCard({ label, value, tone }: { label: string; value: number; tone?: 'goals' | 'assists' | 'total' | 'saves' }) {
   return (
-    <div className="summary-card">
+    <div className={['summary-card', tone ? `summary-card-${tone}` : ''].filter(Boolean).join(' ')}>
       <span className="card-label">{label}</span>
       <span className="card-value">{value}</span>
+    </div>
+  )
+}
+
+function CareerProgressionChart({ rows }: { rows: PlayerStatRow[] }) {
+  const maxGoals = Math.max(...rows.map(row => row.goals), 1)
+
+  return (
+    <div className="career-chart" aria-label="Goles por temporada">
+      {rows.map(row => (
+        <div key={row.roster_id} className="career-chart-item">
+          <div className="career-chart-bar-wrap">
+            <div
+              className="career-chart-bar"
+              style={{ height: `${Math.max((row.goals / maxGoals) * 100, row.goals > 0 ? 8 : 2)}%` }}
+            />
+          </div>
+          <span className="career-chart-value">{row.goals}</span>
+          <span className="career-chart-label">{row.season_name}</span>
+        </div>
+      ))}
     </div>
   )
 }

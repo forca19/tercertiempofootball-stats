@@ -25,14 +25,13 @@ export default async function TeamStatsContent({ teamSlug, seasonIdFromQuery }: 
         <Link href="/" className="back-link">← Inicio</Link>
       </nav>
 
-      <header className="page-header">
+      <header className="page-header team-hero">
         <div className="team-header-left">
           {team.logo_url && (
             <img
               src={team.logo_url}
               alt={`Logo de ${team.name}`}
               className="team-logo-lg"
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
             />
           )}
           <div>
@@ -40,14 +39,18 @@ export default async function TeamStatsContent({ teamSlug, seasonIdFromQuery }: 
             <p className="subtitle">Temporada {activeSeason.name} · Estadísticas de jugadores</p>
           </div>
         </div>
+        <div className="team-hero-meta" aria-label="Resumen histórico del equipo">
+          <span><strong>{seasons.length}</strong> temporadas históricas</span>
+          <span><strong>{players.length}</strong> jugadores en temporada</span>
+        </div>
         <Suspense>
           <SeasonSelector seasons={seasons} currentSeasonId={activeSeason.id} />
         </Suspense>
       </header>
 
       <section className="summary-cards">
-        <SummaryCard label="Goles totales" value={totals.goals} />
-        <SummaryCard label="Asistencias totales" value={totals.assists} />
+        <SummaryCard label="Goles totales" value={totals.goals} tone="goals" />
+        <SummaryCard label="Asistencias totales" value={totals.assists} tone="assists" />
         <SummaryCard label="Partidos" value={totals.matches} />
         <SummaryCard label="Jugadores" value={players.length} />
       </section>
@@ -90,7 +93,6 @@ export default async function TeamStatsContent({ teamSlug, seasonIdFromQuery }: 
                           src={p.player_photo_url}
                           alt={p.player_name}
                           className="player-avatar"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                         />
                       )}
                       <span className="player-name">{p.player_name}</span>
@@ -111,9 +113,9 @@ export default async function TeamStatsContent({ teamSlug, seasonIdFromQuery }: 
   )
 }
 
-function SummaryCard({ label, value }: { label: string; value: number }) {
+function SummaryCard({ label, value, tone }: { label: string; value: number; tone?: 'goals' | 'assists' | 'total' | 'saves' }) {
   return (
-    <div className="summary-card">
+    <div className={['summary-card', tone ? `summary-card-${tone}` : ''].filter(Boolean).join(' ')}>
       <span className="card-label">{label}</span>
       <span className="card-value">{value}</span>
     </div>
@@ -127,14 +129,14 @@ function Leaderboard({ title, players, stat, teamSlug, seasonId }: {
   teamSlug: string
   seasonId: string
 }) {
-  const max = players[0]?.[stat] ?? 1
+  const max = Math.max(players[0]?.[stat] ?? 0, 1)
   return (
     <div className="leaderboard">
       <h2>{title}</h2>
       <ol className="leaderboard-list">
         {players.map((p, i) => (
           <li key={p.roster_id} className="leaderboard-row">
-            <span className="rank">{i + 1}</span>
+            <span className={`rank rank-${i + 1}`}>{i + 1}</span>
             <Link href={getPlayerHref(p.player_id, teamSlug, seasonId)} className="lb-name lb-link">
               {p.player_name}
             </Link>

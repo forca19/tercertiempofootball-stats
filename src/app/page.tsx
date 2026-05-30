@@ -89,7 +89,7 @@ export default async function Home() {
       <section className="summary-cards" aria-label="Resumen general">
         <SummaryCard label="Jugadores" value={playersCount ?? playerTotals.length} />
         <SummaryCard label="Temporadas" value={seasonsCount ?? seasons.length} />
-        <SummaryCard label="Goles" value={totalGoals} />
+        <SummaryCard label="Goles" value={totalGoals} tone="goals" />
       </section>
 
       <section className="player-table-section">
@@ -131,11 +131,12 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="player-table-section">
+      <section className="player-table-section hall-of-fame-section">
         <h2>Salón de la fama</h2>
-        <div className="leaderboards">
-          {hallOfFame.map(item => (
-            <article key={item.label} className="leaderboard">
+        <div className="leaderboards hall-of-fame-grid">
+          {hallOfFame.map((item, index) => (
+            <article key={item.label} className="leaderboard trophy-card">
+              <span className={`trophy-mark trophy-${index + 1}`} aria-hidden="true">{index + 1}</span>
               <h2>{item.label}</h2>
               {item.player ? (
                 <div>
@@ -159,9 +160,9 @@ export default async function Home() {
   )
 }
 
-function SummaryCard({ label, value }: { label: string; value: number }) {
+function SummaryCard({ label, value, tone }: { label: string; value: number; tone?: 'goals' | 'assists' | 'total' | 'saves' }) {
   return (
-    <div className="summary-card">
+    <div className={['summary-card', tone ? `summary-card-${tone}` : ''].filter(Boolean).join(' ')}>
       <span className="card-label">{label}</span>
       <span className="card-value">{value}</span>
     </div>
