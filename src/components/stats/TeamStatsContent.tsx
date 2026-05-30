@@ -21,19 +21,23 @@ export default async function TeamStatsContent({ teamSlug, seasonIdFromQuery }: 
 
   return (
     <main className="page">
+      <nav>
+        <Link href="/" className="back-link">← Inicio</Link>
+      </nav>
+
       <header className="page-header">
         <div className="team-header-left">
           {team.logo_url && (
             <img
               src={team.logo_url}
-              alt={`${team.name} logo`}
+              alt={`Logo de ${team.name}`}
               className="team-logo-lg"
               onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
             />
           )}
           <div>
             <h1>{team.name}</h1>
-            <p className="subtitle">Season {activeSeason.name} · Player statistics</p>
+            <p className="subtitle">Temporada {activeSeason.name} · Estadísticas de jugadores</p>
           </div>
         </div>
         <Suspense>
@@ -42,25 +46,37 @@ export default async function TeamStatsContent({ teamSlug, seasonIdFromQuery }: 
       </header>
 
       <section className="summary-cards">
-        <SummaryCard label="Total goals" value={totals.goals} />
-        <SummaryCard label="Total assists" value={totals.assists} />
-        <SummaryCard label="Matches" value={totals.matches} />
-        <SummaryCard label="Players" value={players.length} />
+        <SummaryCard label="Goles totales" value={totals.goals} />
+        <SummaryCard label="Asistencias totales" value={totals.assists} />
+        <SummaryCard label="Partidos" value={totals.matches} />
+        <SummaryCard label="Jugadores" value={players.length} />
       </section>
 
       <section className="leaderboards">
-        <Leaderboard title="Top scorers" players={topScorers} stat="goals" />
-        <Leaderboard title="Top assists" players={topAssists} stat="assists" />
+        <Leaderboard
+          title="Goleadores"
+          players={topScorers}
+          stat="goals"
+          teamSlug={team.slug}
+          seasonId={activeSeason.id}
+        />
+        <Leaderboard
+          title="Asistencias"
+          players={topAssists}
+          stat="assists"
+          teamSlug={team.slug}
+          seasonId={activeSeason.id}
+        />
       </section>
 
       <section className="player-table-section">
-        <h2>All players</h2>
+        <h2>Todos los jugadores</h2>
         <div className="table-wrapper">
           <table className="player-table">
             <thead>
               <tr>
-                <th>#</th><th>Player</th><th>Pos</th>
-                <th>Matches</th><th>Goals</th><th>Assists</th><th>G+A</th>
+                <th>#</th><th>Jugador</th><th>Posición</th>
+                <th>Partidos</th><th>Goles</th><th>Asistencias</th><th>G+A</th>
               </tr>
             </thead>
             <tbody>
@@ -68,7 +84,7 @@ export default async function TeamStatsContent({ teamSlug, seasonIdFromQuery }: 
                 <tr key={p.roster_id}>
                   <td className="muted">{p.number ?? '—'}</td>
                   <td>
-                    <Link href={`/v1/player/${p.player_id}`} className="player-link">
+                    <Link href={getPlayerHref(p.player_id, team.slug, activeSeason.id)} className="player-link">
                       {p.player_photo_url && (
                         <img
                           src={p.player_photo_url}
@@ -104,10 +120,12 @@ function SummaryCard({ label, value }: { label: string; value: number }) {
   )
 }
 
-function Leaderboard({ title, players, stat }: {
+function Leaderboard({ title, players, stat, teamSlug, seasonId }: {
   title: string
   players: PlayerStatRow[]
   stat: 'goals' | 'assists'
+  teamSlug: string
+  seasonId: string
 }) {
   const max = players[0]?.[stat] ?? 1
   return (
@@ -117,7 +135,7 @@ function Leaderboard({ title, players, stat }: {
         {players.map((p, i) => (
           <li key={p.roster_id} className="leaderboard-row">
             <span className="rank">{i + 1}</span>
-            <Link href={`/v1/player/${p.player_id}`} className="lb-name lb-link">
+            <Link href={getPlayerHref(p.player_id, teamSlug, seasonId)} className="lb-name lb-link">
               {p.player_name}
             </Link>
             <div className="bar-track">
@@ -129,4 +147,8 @@ function Leaderboard({ title, players, stat }: {
       </ol>
     </div>
   )
+}
+
+function getPlayerHref(playerId: string, teamSlug: string, seasonId: string) {
+  return `/v1/player/${playerId}?team=${teamSlug}&season=${seasonId}`
 }

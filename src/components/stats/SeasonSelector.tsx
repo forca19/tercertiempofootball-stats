@@ -21,11 +21,11 @@ export default function SeasonSelector({ seasons, currentSeasonId }: Props) {
 
   return (
     <div className="season-selector">
-      <label htmlFor="season-select">Season</label>
+      <label htmlFor="season-select">Temporada</label>
       <select id="season-select" value={currentSeasonId} onChange={handleChange}>
         {seasons.map(s => (
           <option key={s.id} value={s.id}>
-            {s.name}{s.is_current ? ' (current)' : ''}
+            {s.name}{s.is_current ? ' (actual)' : ''}
           </option>
         ))}
       </select>
