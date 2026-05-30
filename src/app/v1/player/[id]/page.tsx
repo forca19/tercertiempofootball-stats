@@ -1,39 +1,31 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getPlayerById, getPlayerCareer } from '@/lib/supabase'
-import type { PlayerStatRow } from '@/lib/supabase'
 
 interface Props {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export default async function PlayerProfilePage({ params }: Props) {
+  const { id } = await params
+
   const [player, career] = await Promise.all([
-    getPlayerById(params.id),
-    getPlayerCareer(params.id),
+    getPlayerById(id),
+    getPlayerCareer(id),
   ])
 
   if (!player) notFound()
 
-  const totalGoals   = career.reduce((s, r) => s + r.goals, 0)
+  const totalGoals = career.reduce((s, r) => s + r.goals, 0)
   const totalAssists = career.reduce((s, r) => s + r.assists, 0)
   const totalMatches = career.reduce((s, r) => s + r.matches, 0)
 
-  // Group by season for the career table
-  const bySeason = career.reduce<Record<string, PlayerStatRow[]>>((acc, row) => {
-    acc[row.season_name] = acc[row.season_name] ?? []
-    acc[row.season_name].push(row)
-    return acc
-  }, {})
-
   return (
     <main className="page">
-      {/* Back link */}
       <nav>
         <Link href="javascript:history.back()" className="back-link">← Back</Link>
       </nav>
 
-      {/* Player header */}
       <header className="player-header">
         <div className="player-photo-wrap">
           {player.photo_url ? (
@@ -53,20 +45,19 @@ export default async function PlayerProfilePage({ params }: Props) {
           <h1>{player.name}</h1>
           <p className="subtitle">
             {[player.position, player.number ? `#${player.number}` : null]
-              .filter(Boolean).join(' · ')}
+              .filter(Boolean)
+              .join(' · ')}
           </p>
         </div>
       </header>
 
-      {/* Career totals */}
       <section className="summary-cards">
-        <SummaryCard label="Career goals"   value={totalGoals} />
+        <SummaryCard label="Career goals" value={totalGoals} />
         <SummaryCard label="Career assists" value={totalAssists} />
-        <SummaryCard label="Total matches"  value={totalMatches} />
-        <SummaryCard label="Teams"          value={new Set(career.map(r => r.team_id)).size} />
+        <SummaryCard label="Total matches" value={totalMatches} />
+        <SummaryCard label="Teams" value={new Set(career.map(r => r.team_id)).size} />
       </section>
 
-      {/* Career breakdown by season */}
       <section className="player-table-section">
         <h2>Career breakdown</h2>
         <div className="table-wrapper">
@@ -86,7 +77,8 @@ export default async function PlayerProfilePage({ params }: Props) {
                 <tr key={row.roster_id}>
                   <td>
                     <span className={row.is_current ? 'badge-current' : 'muted'}>
-                      {row.season_name}{row.is_current ? ' ·  current' : ''}
+                      {row.season_name}
+                      {row.is_current ? ' ·  current' : ''}
                     </span>
                   </td>
                   <td>

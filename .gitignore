@@ -20,6 +20,9 @@
 # production
 /build
 
+# import audit logs
+/reports/
+
 # misc
 .DS_Store
 *.pem

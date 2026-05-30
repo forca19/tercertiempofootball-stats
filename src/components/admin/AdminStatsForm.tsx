@@ -128,7 +128,15 @@ export default function AdminStatsForm({ teams, seasons, selectedTeamId, selecte
       <div className="field-row">
         <div className="field">
           <label>Team</label>
-          <select value={selectedTeamId} onChange={e => navigate(e.target.value, selectedSeasonId)}>
+          <select
+            value={selectedTeamId}
+            onChange={e => {
+              const p = new URLSearchParams(params.toString())
+              p.set('team', e.target.value)
+              p.delete('season')
+              startTransition(() => router.push(`${pathname}?${p}`))
+            }}
+          >
             {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
           </select>
         </div>

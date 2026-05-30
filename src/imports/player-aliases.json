@@ -1,0 +1,216 @@
+{
+  "$comment": "Player identity map for spreadsheet import. Aliases apply to full-name exact matches only — never substring or fuzzy matching.",
+  "version": "1.1.0",
+  "updated": "2026-05-27",
+
+  "players": [
+    {
+      "canonical": "Profe Ivan",
+      "aliases": ["Ivan", "Iván"],
+      "confidence": "high",
+      "notes": "Current sheet label. Distinct from Iván Carpa — see blocked_merges."
+    },
+    {
+      "canonical": "Daniel Cavani",
+      "aliases": ["Cavani"],
+      "confidence": "high",
+      "notes": "Short vs full name; one Cavani row remains in Lideres Apertura 2023."
+    },
+    {
+      "canonical": "Adrian",
+      "aliases": ["Adrián"],
+      "confidence": "high",
+      "notes": "Accent-only difference on Lideres."
+    },
+    {
+      "canonical": "Home",
+      "aliases": ["Home 💦", "Homero"],
+      "confidence": "high",
+      "notes": "Emoji decoration and historical Homero label on Lideres."
+    },
+    {
+      "canonical": "Toño",
+      "aliases": ["Tono"],
+      "confidence": "high",
+      "notes": "Accent-only; Tono on Pericos, Toño on Lideres."
+    },
+    {
+      "canonical": "Peps",
+      "aliases": ["peps"],
+      "confidence": "high",
+      "notes": "Case-only on Pericos 2022–2023."
+    },
+    {
+      "canonical": "Checo",
+      "aliases": ["Checo G"],
+      "confidence": "high",
+      "notes": "Initial suffix on Lideres. Distinct from Pache — see blocked_merges."
+    },
+    {
+      "canonical": "Pache",
+      "aliases": ["Pacheco", "PacheGol"],
+      "confidence": "high",
+      "notes": "Historical Pericos variants; current sheets use Pache. Distinct from Checo — see blocked_merges."
+    },
+    {
+      "canonical": "Muf",
+      "aliases": ["Mufasa"],
+      "confidence": "high",
+      "notes": "Historical Pericos nickname; current sheets use Muf only."
+    },
+    {
+      "canonical": "Maclo",
+      "aliases": ["maclo"],
+      "confidence": "high",
+      "notes": "Historical lowercase on Pericos Clausura 2022."
+    },
+    {
+      "canonical": "Rodri",
+      "aliases": ["Rod"],
+      "confidence": "high",
+      "notes": "Historical short form on Delfinos/Lideres; current sheets use Rodri only."
+    },
+    {
+      "canonical": "Chris",
+      "aliases": ["Chris ⭐", "Christian"],
+      "confidence": "high",
+      "notes": "Historical Lideres variants; current sheets use Chris only."
+    },
+    {
+      "canonical": "Wicho",
+      "aliases": ["Huicho"],
+      "confidence": "high",
+      "notes": "Historical typo on Pericos Clausura 2022."
+    },
+    {
+      "canonical": "Santi Portero",
+      "aliases": ["Santi portero", "Santi P"],
+      "confidence": "high",
+      "notes": "Goalkeeper label. Distinct from Santi and Santiago Avalos — see blocked_merges."
+    },
+    {
+      "canonical": "Marco Mamado",
+      "aliases": ["Marco"],
+      "confidence": "medium",
+      "notes": "Plain Marco renamed to Marco Mamado; Marco L remains a separate entry pending confirmation."
+    }
+  ],
+
+  "blocked_merges": [
+    {
+      "id": "giorgio-jiorjio",
+      "names": ["Giorgio", "Jiorjio"],
+      "status": "confirmed_distinct",
+      "rule": "Different players. Never alias, fuzzy-match, or substring-match across this pair."
+    },
+    {
+      "id": "on-jona",
+      "names": ["ON", "Jona"],
+      "status": "confirmed_distinct",
+      "rule": "Different players. Never merge despite co-occurring on rosters."
+    },
+    {
+      "id": "santi-line",
+      "names": ["Santi", "Santi Portero", "Santiago Avalos"],
+      "status": "confirmed_distinct",
+      "rule": "Three different players. Historical aliases for Santi Portero must not resolve to Santi or Santiago Avalos."
+    },
+    {
+      "id": "omar-osmar",
+      "names": ["Omar", "Osmar"],
+      "status": "confirmed_distinct",
+      "rule": "Different players. Do not treat as typo variants."
+    },
+    {
+      "id": "profe-ivan-carpa",
+      "names": ["Profe Ivan", "Iván Carpa", "Ivan Carpa"],
+      "status": "confirmed_distinct",
+      "rule": "Different players. Alias lookup for Ivan/Iván must not apply when the full name is Iván Carpa."
+    },
+    {
+      "id": "checo-pache",
+      "names": ["Checo", "Pache"],
+      "status": "confirmed_distinct",
+      "rule": "Different players across Delfinos/Lideres vs Pericos. Each may alias within their own variant set only."
+    }
+  ],
+
+  "auto_normalize": {
+    "description": "Safe transforms applied before alias lookup. Full-name exact match required for alias resolution.",
+    "rules": [
+      {
+        "id": "trim_whitespace",
+        "apply": "all",
+        "action": "Collapse internal spaces and trim leading/trailing whitespace."
+      },
+      {
+        "id": "strip_emoji",
+        "apply": "all",
+        "action": "Remove emoji and other symbols used as decoration (e.g. Chris ⭐, Home 💦)."
+      },
+      {
+        "id": "fold_accents_for_lookup",
+        "apply": "alias_matching_only",
+        "action": "Compare names accent-insensitively for exact full-name alias lookup only."
+      },
+      {
+        "id": "case_insensitive_lookup",
+        "apply": "alias_matching_only",
+        "action": "Match aliases without regard to case (e.g. peps → Peps, maclo → Maclo)."
+      },
+      {
+        "id": "no_substring_alias",
+        "apply": "all",
+        "action": "Never infer aliases from partial names (e.g. Iván must not match Iván Carpa)."
+      },
+      {
+        "id": "enforce_blocked_merges",
+        "apply": "all",
+        "action": "Reject any step that would map two names in the same blocked_merges group to one canonical player."
+      }
+    ],
+    "deterministic_pairs": [
+      { "from": "maclo", "to": "Maclo" },
+      { "from": "peps", "to": "Peps" },
+      { "from": "Adrián", "to": "Adrian" },
+      { "from": "Ivan", "to": "Profe Ivan" },
+      { "from": "Iván", "to": "Profe Ivan" },
+      { "from": "Tono", "to": "Toño" },
+      { "from": "Home 💦", "to": "Home" },
+      { "from": "Homero", "to": "Home" },
+      { "from": "Chris ⭐", "to": "Chris" },
+      { "from": "Cavani", "to": "Daniel Cavani" },
+      { "from": "Checo G", "to": "Checo" },
+      { "from": "Mufasa", "to": "Muf" },
+      { "from": "Pacheco", "to": "Pache" },
+      { "from": "PacheGol", "to": "Pache" },
+      { "from": "Rod", "to": "Rodri" },
+      { "from": "Huicho", "to": "Wicho" },
+      { "from": "Christian", "to": "Chris" },
+      { "from": "Santi portero", "to": "Santi Portero" },
+      { "from": "Santi P", "to": "Santi Portero" },
+      { "from": "Marco", "to": "Marco Mamado" }
+    ]
+  },
+
+  "manual_confirmation_required": [
+    {
+      "group": "Marco Mamado / Marco L",
+      "names": ["Marco Mamado", "Marco L"],
+      "question": "Same person? Both appear in Lideres Otoño-Invierno 2025-2026.",
+      "recommendation": "Confirm before merging; not covered by confirmed business rules yet."
+    },
+    {
+      "group": "cheche",
+      "names": ["cheche"],
+      "question": "Unknown player; single row on Pericos Clausura 2022.",
+      "recommendation": "Confirm real player or data entry error."
+    },
+    {
+      "group": "Placeholder / joke names",
+      "names": ["Huevón"],
+      "question": "Real roster entry or joke nickname?",
+      "recommendation": "Confirm before import."
+    }
+  ]
+}

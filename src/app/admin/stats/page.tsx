@@ -1,24 +1,31 @@
-import { getAllTeams, getAllSeasons, getCurrentSeason, getTeamStats } from '@/lib/supabase'
+import {
+  getAllTeams,
+  getSeasonsForTeam,
+  getTeamStats,
+  resolveSeasonForTeam,
+} from '@/lib/supabase'
 import AdminStatsForm from '@/components/admin/AdminStatsForm'
 import AdminRosterTable from '@/components/admin/AdminRosterTable'
 
 interface Props {
-  searchParams: { team?: string; season?: string }
+  searchParams: Promise<{ team?: string; season?: string }>
 }
 
 export default async function AdminStatsPage({ searchParams }: Props) {
-  const [teams, seasons, currentSeason] = await Promise.all([
-    getAllTeams(),
-    getAllSeasons(),
-    getCurrentSeason(),
-  ])
+  const { team: teamIdFromQuery, season: seasonIdFromQuery } = await searchParams
 
-  const selectedTeam   = teams.find(t => t.id === searchParams.team) ?? teams[0]
-  const selectedSeason = seasons.find(s => s.id === searchParams.season) ?? currentSeason ?? seasons[0]
+  const teams = await getAllTeams()
+  const selectedTeam = teams.find(t => t.id === teamIdFromQuery) ?? teams[0]
 
-  const teamStats = selectedTeam && selectedSeason
-    ? await getTeamStats(selectedTeam.slug, selectedSeason.id)
-    : null
+  const seasons = selectedTeam ? await getSeasonsForTeam(selectedTeam.id) : []
+  const selectedSeason = selectedTeam
+    ? resolveSeasonForTeam(seasons, seasonIdFromQuery)
+    : undefined
+
+  const teamStats =
+    selectedTeam && selectedSeason
+      ? await getTeamStats(selectedTeam.slug, selectedSeason.id)
+      : null
 
   return (
     <main className="page">
@@ -29,7 +36,6 @@ export default async function AdminStatsPage({ searchParams }: Props) {
         </div>
       </header>
 
-      {/* Team + season selectors */}
       <section className="admin-selectors">
         <AdminStatsForm
           teams={teams}
@@ -39,7 +45,6 @@ export default async function AdminStatsPage({ searchParams }: Props) {
         />
       </section>
 
-      {/* Current roster table */}
       {teamStats && teamStats.players.length > 0 && (
         <section className="player-table-section">
           <h2>

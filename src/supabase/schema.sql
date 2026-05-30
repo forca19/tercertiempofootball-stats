@@ -82,6 +82,7 @@ create table stats (
   roster_id   uuid primary key references team_roster(id) on delete cascade,
   goals       int not null default 0,
   assists     int not null default 0,
+  saves       int not null default 0,
   matches     int not null default 0,
   updated_at  timestamptz not null default now()
 );
@@ -105,6 +106,7 @@ select
   s.is_current,
   coalesce(st.goals,   0) as goals,
   coalesce(st.assists, 0) as assists,
+  coalesce(st.saves,   0) as saves,
   coalesce(st.matches, 0) as matches,
   tr.id                   as roster_id
 from team_roster tr

@@ -1,0 +1,12 @@
+{
+  "teams": {
+    "Delfinos": { "slug": "delfinos", "name": "Delfinos" },
+    "Lideres": { "slug": "lideres", "name": "Lideres" },
+    "Pericos": { "slug": "pericos", "name": "Pericos" }
+  },
+  "season_current": {
+    "delfinos": "Apertura 2026",
+    "lideres": "Otoño-Invierno 2025-2026",
+    "pericos": "Apertura 2025"
+  }
+}
