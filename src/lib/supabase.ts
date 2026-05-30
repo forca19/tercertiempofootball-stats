@@ -39,6 +39,7 @@ export type PlayerStatRow = {
   team_logo_url: string | null
   season_id: string
   season_name: string
+  season_sort_order: number | null
   is_current: boolean
   goals: number
   assists: number
@@ -98,9 +99,37 @@ export async function getPlayerCareer(playerId: string): Promise<PlayerStatRow[]
     .from('player_stats_view')
     .select('*')
     .eq('player_id', playerId)
-    .order('season_name', { ascending: false })
   if (error) throw error
-  return data ?? []
+
+  const rows = data ?? []
+  const seasonIds = [...new Set(rows.map(row => row.season_id))]
+  const { data: seasonRows, error: seasonsError } = seasonIds.length
+    ? await supabase
+        .from('seasons')
+        .select('id, sort_order')
+        .in('id', seasonIds)
+    : { data: [], error: null }
+  if (seasonsError) throw seasonsError
+
+  const sortOrderBySeasonId = new Map(
+    (seasonRows ?? []).map(row => [row.id, row.sort_order as number | null])
+  )
+
+  return rows
+    .map(row => ({
+      ...row,
+      season_sort_order: sortOrderBySeasonId.get(row.season_id) ?? null,
+    }))
+    .sort(compareCareerRowsAsc)
+}
+
+function compareCareerRowsAsc(a: PlayerStatRow, b: PlayerStatRow) {
+  if (a.season_sort_order != null && b.season_sort_order != null) {
+    return a.season_sort_order - b.season_sort_order
+  }
+  if (a.season_sort_order != null) return -1
+  if (b.season_sort_order != null) return 1
+  return a.season_name.localeCompare(b.season_name, 'es')
 }
 
 export async function getTeamStats(

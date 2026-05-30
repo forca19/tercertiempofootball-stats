@@ -28,7 +28,8 @@ export default async function PlayerProfilePage({ params, searchParams }: Props)
   )
   const primaryTeamRow = contextTeamRow ?? career.find(row => row.is_current) ?? career[0]
   const seasonsCount = new Set(career.map(r => r.season_id)).size
-  const chartRows = [...career].reverse()
+  const chartRows = career
+  const historyRows = [...career].reverse()
 
   return (
     <main className="page">
@@ -100,7 +101,7 @@ export default async function PlayerProfilePage({ params, searchParams }: Props)
               </tr>
             </thead>
             <tbody>
-              {career.map(row => (
+              {historyRows.map(row => (
                 <tr key={row.roster_id}>
                   <td>
                     <span className={row.is_current ? 'badge-current' : 'muted'}>
@@ -153,6 +154,13 @@ function CareerProgressionChart({ rows }: { rows: PlayerStatRow[] }) {
     <div className="career-chart" aria-label="Goles por temporada">
       {rows.map(row => (
         <div key={row.roster_id} className="career-chart-item">
+          <div className="career-chart-logo-wrap" title={row.team_name}>
+            {row.team_logo_url ? (
+              <img src={row.team_logo_url} alt={row.team_name} className="career-chart-logo" />
+            ) : (
+              <span className="career-chart-logo-placeholder">{row.team_name.slice(0, 2).toUpperCase()}</span>
+            )}
+          </div>
           <div className="career-chart-bar-wrap">
             <div
               className="career-chart-bar"
