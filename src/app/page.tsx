@@ -32,12 +32,6 @@ type PlayerTotals = {
   matches: number
 }
 
-const featuredTeams = [
-  { slug: 'delfinos', name: 'Delfinos' },
-  { slug: 'lideres', name: 'Líderes' },
-  { slug: 'pericos', name: 'Pericos' },
-]
-
 export default async function Home() {
   const [
     { data: teamsData, error: teamsError },
@@ -45,7 +39,7 @@ export default async function Home() {
     { data: statsData, error: statsError },
     { count: playersCount, error: playersError },
   ] = await Promise.all([
-    supabase.from('teams').select('id, slug, name, logo_url').in('slug', featuredTeams.map(t => t.slug)),
+    supabase.from('teams').select('id, slug, name, logo_url').order('name'),
     supabase.from('seasons').select('id, team_id', { count: 'exact' }),
     supabase.from('player_stats_view').select('player_id, player_name, team_id, goals, assists, matches'),
     supabase.from('players').select('id', { count: 'exact', head: true }),
@@ -101,36 +95,34 @@ export default async function Home() {
       <section className="player-table-section">
         <h2>Equipos</h2>
         <div className="summary-cards">
-          {featuredTeams.map(featuredTeam => {
-            const team = teams.find(t => t.slug === featuredTeam.slug)
-            const teamId = team?.id
-            const teamSeasonCount = teamId ? seasons.filter(s => s.team_id === teamId).length : 0
-            const teamPlayerCount = teamId
-              ? new Set(stats.filter(row => row.team_id === teamId).map(row => row.player_id)).size
-              : 0
+          {teams.map(team => {
+            const teamSeasonCount = seasons.filter(s => s.team_id === team.id).length
+            const teamPlayerCount = new Set(
+              stats.filter(row => row.team_id === team.id).map(row => row.player_id)
+            ).size
 
             return (
-              <article key={featuredTeam.slug} className="summary-card">
+              <article key={team.id} className="summary-card">
                 <div className="team-header-left">
-                  {team?.logo_url ? (
+                  {team.logo_url ? (
                     <img
                       src={team.logo_url}
-                      alt={`Logo de ${featuredTeam.name}`}
+                      alt={`Logo de ${team.name}`}
                       className="team-logo-lg"
                     />
                   ) : (
                     <div className="player-photo-placeholder" aria-hidden="true">
-                      {featuredTeam.name.slice(0, 2).toUpperCase()}
+                      {team.name.slice(0, 2).toUpperCase()}
                     </div>
                   )}
                   <div>
-                    <h3>{featuredTeam.name}</h3>
+                    <h3>{team.name}</h3>
                     <p className="subtitle">
                       {teamSeasonCount} temporadas · {teamPlayerCount} jugadores
                     </p>
                   </div>
                 </div>
-                <Link href={`/team/${featuredTeam.slug}`} className="btn-primary">
+                <Link href={`/team/${team.slug}`} className="btn-primary">
                   Ver estadísticas
                 </Link>
               </article>
