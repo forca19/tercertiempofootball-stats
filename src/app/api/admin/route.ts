@@ -17,6 +17,23 @@ export async function POST(req: NextRequest) {
       })
       return NextResponse.json({ ok: true, player })
     }
+    
+    if (action === 'bulk_update_stats') {
+      const { updates } = body
+
+      for (const update of updates) {
+        await upsertStats(update.roster_id, {
+          goals: update.goals,
+          assists: update.assists,
+          matches: update.matches,
+        })
+      }
+
+      return NextResponse.json({
+        ok: true,
+        updated: updates.length,
+      })
+    }
 
     if (action === 'upsert_team_logo') {
       const { teamId, logoUrl } = body

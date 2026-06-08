@@ -330,3 +330,35 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); font
 }
 .btn-secondary:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
 .btn-secondary:disabled { opacity: 0.6; cursor: not-allowed; }
+.player-stat-input {
+  width: 56px;
+  padding: 6px 8px;
+
+  border: 1px solid var(--border);
+  border-radius: 6px;
+
+  background: var(--surface-2);
+  color: var(--text);
+
+  text-align: center;
+  font-family: var(--font);
+}
+
+.player-stat-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.player-stat-input::-webkit-outer-spin-button,
+.player-stat-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.player-stat-input {
+  -moz-appearance: textfield;
+}
+
+.player-stat-input.modified {
+  border-color: var(--accent);
+}
